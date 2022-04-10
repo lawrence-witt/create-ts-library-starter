@@ -41,9 +41,7 @@ const mergePackage = (package, options = {}) => {
   return package;
 };
 
-const mergePackageLock = (package, options = {}) => {
-  const { name } = options;
-
+const mergePackageLock = (package, name) => {
   package.name = name;
   package.version = "0.1.0";
 

@@ -125,11 +125,19 @@ const {
     includeJest,
   });
 
-  const packageLock = require("../package-lock.json");
+  const packageLock = JSON.parse(fs.readFileSync(`./${directory}/package-lock.json`, "utf-8"));
 
-  const mergedPackageLock = mergePackageLock(packageLock, { name: directory });
+  const mergedPackageLock = mergePackageLock(packageLock, directory);
 
   console.log("Merging package details...");
   fs.writeFileSync(`./${directory}/package.json`, JSON.stringify(mergedPackage, null, 2));
   fs.writeFileSync(`./${directory}/package-lock.json`, JSON.stringify(mergedPackageLock, null, 2));
+
+  console.log("Committing changes...");
+  runCommand(cmd.cd(directory, "git add ."));
+  runCommand(
+    cmd.cd(directory, "git commit -m 'initialise new library with create-ts-library-starter'"),
+  );
+
+  console.log("Project initialised.");
 })();
