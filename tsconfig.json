@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "target": "es6",
+    "module": "es2015",
+    "moduleResolution": "node",
+    "noEmitOnError": true,
+    "noErrorTruncation": true,
+    "strict": true,
+    "esModuleInterop": true,
+    "isolatedModules": true,
+    "outDir": "./dist",
+    "declaration": true,
+    "declarationDir": "./dist/types",
+    "sourceMap": true,
+    "baseUrl": "./src"
+  },
+  "include": ["./src"],
+  "exclude": ["./src/**/*.test.ts"]
+}
