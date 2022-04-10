@@ -58,12 +58,21 @@ const {
 
     const jestEnvPath = includeDOM ? "dom" : "common";
 
+    const jestConfigLocation = `./${directory}/bin/config/jest/jest.config.${jestEnvPath}.ts`;
+    const jestConfigDestination = `./${directory}/config/jest.config.ts`;
+
+    const jestSetupLocation = `./${directory}/bin/config/jest/setup-tests.ts`;
+    const jestSetupDestination = `./${directory}/config/setup-tests.ts`;
+
     runCommand(installDevCommand(jestDevDeps));
-    runCommand(`mv ./bin/config/jest/jest.config.${jestEnvPath}.ts ./config/jest.config.ts`);
-    includeDOM && runCommand(`mv ./bin/config/jest/setup-tests.ts ./config/setup-tests.ts`);
+    runCommand(`mv ${jestConfigLocation} ${jestConfigDestination}`);
+    includeDOM && runCommand(`mv ${jestSetupLocation} ${jestSetupDestination}`);
   }
 
-  runCommand(`mv ./bin/config/rollup/rollup.config.common.ts ./config/rollup.config.ts`);
+  const rollupConfigLocation = `./${directory}/bin/config/rollup/rollup.config.common.ts`;
+  const rollupConfigDestination = `./${directory}/config/rollup.config.ts`;
+
+  runCommand(`mv ${rollupConfigLocation} ${rollupConfigDestination}`);
 
   const tsConfig = {
     node: () => tsCommonConfig,
@@ -71,7 +80,7 @@ const {
     react: () => createTSReactConfig(tsCommonConfig, includeJest),
   }[envResult]();
 
-  fs.writeFileSync(`${process.cwd()}/tsconfig.json`, JSON.stringify(tsConfig, null, 2));
+  fs.writeFileSync(`./${directory}/tsconfig.json`, JSON.stringify(tsConfig, null, 2));
 
   const eslintConfig = {
     node: () => eslintCommonConfig,
@@ -79,7 +88,7 @@ const {
     react: () => createEslintReactConfig(eslintCommonConfig),
   }[envResult]();
 
-  fs.writeFileSync(`${process.cwd()}/.eslintrc.js`, writeExportJSONFile(eslintConfig));
+  fs.writeFileSync(`./${directory}/.eslintrc.js`, writeExportJSONFile(eslintConfig));
 
   const mergedPackage = mergePackage(package, {
     name: directory,
@@ -87,8 +96,8 @@ const {
     includeJest,
   });
 
-  fs.writeFileSync(`${process.cwd()}/package.json`, JSON.stringify(mergedPackage, null, 2));
+  fs.writeFileSync(`./${directory}/package.json`, JSON.stringify(mergedPackage, null, 2));
 
-  runCommand("rimraf ./config/.gitkeep");
-  runCommand("rimraf bin");
+  runCommand(`rm ./${directory}/config/.gitkeep`);
+  runCommand(`rimraf ./${directory}/bin`);
 })();

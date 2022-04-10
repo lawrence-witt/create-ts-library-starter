@@ -18,7 +18,7 @@ const runCommand = (command) => {
 };
 
 const runPrompt = async (query, options = []) => {
-  const optionString = !options[0] ? "" : ` (${options.join(", ")})`;
+  const optionString = !options[0] ? "" : ` (${options.join(", ")}) `;
   const reader = readline.createInterface({ input: process.stdin, output: process.stdout });
 
   let result = await new Promise((resolve) => reader.question(`${query}${optionString}`, resolve));
