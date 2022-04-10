@@ -12,7 +12,7 @@ const runCommand = (command) => {
   try {
     execSync(`${command}`, { stdio: "inherit" });
   } catch (e) {
-    console.error(`Failed to execute ${command}:`);
+    console.log(`Failed to execute ${command}:`);
     exit(e);
   }
 };
@@ -25,6 +25,8 @@ const runPrompt = async (query, options = []) => {
 
   if (options[0] && !options.includes(result))
     exit(new Error(`${result} is not a valid option:${optionString}`));
+
+  reader.close();
 
   return result;
 };

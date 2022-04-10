@@ -11,7 +11,7 @@ const createScripts = (includeReact, includeJest) => {
 
   return {
     prebuild: `${
-      (includeJest && "npm run test ") || ""
+      (includeJest && "npm run test && ") || ""
     }npm run lint && npm run prettier:check && npm run clean`,
     build: "npm run prebuild && rollup -c ./config/rollup.config.ts",
     ...((includeJest && test) || {}),

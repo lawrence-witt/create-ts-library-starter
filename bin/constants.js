@@ -12,7 +12,7 @@ const JEST_DOM_DEV_DEPS = [
   "@testing-library/user-event",
 ];
 const JEST_BROWSER_DEV_DEPS = [...JEST_DOM_DEV_DEPS, "@testing-library/dom"];
-const JEST_REACT_DEV_DEPS = [...JEST_DOM_DEV_DEPS, "@testng-library/react"];
+const JEST_REACT_DEV_DEPS = [...JEST_DOM_DEV_DEPS, "@testing-library/react"];
 
 module.exports = {
   DOM_ENVIRONMENTS,
