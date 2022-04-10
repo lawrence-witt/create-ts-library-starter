@@ -48,11 +48,15 @@ const {
 
   if (!repository) exit(new Error("No repository url found."));
 
+  /* Create the base */
+
   console.log("Cloning into repo...");
   runCommand(`git clone --depth 1 ${repository} ${directory}`);
 
   console.log("Installing base packages...");
   runCommand(cmd.cd(directory, cmd.npm("install")));
+
+  /* Configure user selections */
 
   const envResult = await runPrompt("Select a target environment for this library:", ENVIRONMENTS);
   const includeDOM = DOM_ENVIRONMENTS.includes(envResult);
@@ -91,6 +95,8 @@ const {
       runCommand(cmd.cd(directory, cmd.mv(`${jestSetupLocation} ${jestSetupDestination}`)));
   }
 
+  /* Move other config files into the project */
+
   const rollupConfigLocation = `./bin/config/rollup/rollup.config.common.ts`;
   const rollupConfigDestination = `./config/rollup.config.ts`;
 
@@ -119,7 +125,11 @@ const {
   runCommand(cmd.cd(directory, "rm ./config/.gitkeep"));
   runCommand(cmd.cd(directory, cmd.npmRun("rimraf ./bin")));
 
-  const mergedPackage = mergePackage(package, {
+  /* Update the package and package-lock */
+
+  const updatedPackage = JSON.parse(fs.readFileSync(`./${directory}/package.json`, "utf-8"));
+
+  const mergedPackage = mergePackage(updatedPackage, {
     name: directory,
     includeReact,
     includeJest,
