@@ -1,16 +1,22 @@
 {
-  "name": "ts-library-starter",
+  "name": "create-ts-library-starter",
   "version": "0.1.0",
-  "description": "Repository template for building TS libraries",
+  "description": "Template repository for bootstrapping TypeScript libraries",
   "main": "./dist/index.js",
   "module": "./dist/index.esm.js",
   "types": "./dist/types/index.d.ts",
+  "bin": "./bin/cli.js",
   "scripts": {
-    "build": "npm run lint && npm run prettier:check && npm run clean && rollup -c ./config/rollup.config.ts",
+    "prebuild": "npm run lint && npm run prettier:check && npm run clean",
+    "build": "npm run prebuild && rollup -c ./config/rollup.config.ts",
     "clean": "rimraf ./dist",
     "lint": "eslint ./src --ext .js,.ts",
     "prettier": "prettier -w ./src/**/*.{js,ts}",
     "prettier:check": "prettier -c ./src/**/*.{js,ts}"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/lawrence-witt/create-ts-library-starter"
   },
   "author": "Lawrence Witt",
   "license": "ISC",

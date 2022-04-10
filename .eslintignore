@@ -1,5 +1,8 @@
 # dependencies
 /node_modules
 
+# development
+/bin
+
 # production
 /dist

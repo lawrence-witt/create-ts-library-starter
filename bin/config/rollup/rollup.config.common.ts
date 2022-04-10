@@ -1,6 +1,6 @@
-import { defineConfig } from "rollup";
-import typescript from "rollup-plugin-typescript2";
-import { terser } from "rollup-plugin-terser";
+const { defineConfig } = require("rollup");
+const typescript = require("rollup-plugin-typescript2");
+const { terser } = require("rollup-plugin-terser");
 
 const config = defineConfig({
   input: "./src/index.ts",
@@ -27,4 +27,4 @@ const config = defineConfig({
   ],
 });
 
-export default config;
+module.exports = config;
