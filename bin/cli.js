@@ -54,8 +54,6 @@ const {
   console.log("Installing base packages...");
   runCommand(cmd.cd(directory, cmd.npm("install")));
 
-  const packageLock = require("../package-lock.json");
-
   const envResult = await runPrompt("Select a target environment for this library:", ENVIRONMENTS);
   const includeDOM = DOM_ENVIRONMENTS.includes(envResult);
   const includeReact = envResult === "react";
@@ -126,6 +124,8 @@ const {
     includeReact,
     includeJest,
   });
+
+  const packageLock = require("../package-lock.json");
 
   const mergedPackageLock = mergePackageLock(packageLock, { name: directory });
 
