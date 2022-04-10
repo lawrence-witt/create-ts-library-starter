@@ -136,7 +136,7 @@ const {
   console.log("Committing changes...");
   runCommand(cmd.cd(directory, "git add ."));
   runCommand(
-    cmd.cd(directory, "git commit -m 'initialise new library with create-ts-library-starter'"),
+    cmd.cd(directory, `git commit -m "initialise new library with create-ts-library-starter"`),
   );
 
   console.log("Project initialised.");
