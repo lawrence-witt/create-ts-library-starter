@@ -1,5 +1,5 @@
 {
-  "name": "create-ts-library-starter",
+  "name": "@itt.dev/create-ts-library-starter",
   "version": "0.1.0",
   "description": "Starter template for bootstrapping TypeScript libraries",
   "main": "",
