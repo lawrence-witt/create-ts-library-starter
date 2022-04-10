@@ -3,6 +3,16 @@
 const { execSync } = require("child_process");
 const readline = require("readline");
 
+const cmd = ((chain, generic) => ({
+  cd: generic(chain, "cd"),
+  mv: generic(chain, "mv"),
+  npm: generic(chain, "npm"),
+  npmRun: generic(chain, "npm run"),
+}))(
+  (path, next) => (next ? `${path} && ${next}` : path),
+  (chain, type) => (command, next) => chain(`${type} ${command}`, next),
+);
+
 const exit = (error) => {
   process.exitCode = 1;
   throw error;
@@ -34,6 +44,7 @@ const runPrompt = async (query, options = []) => {
 const writeExportJSONFile = (json) => "module.exports = " + JSON.stringify(json, null, 2) + ";";
 
 module.exports = {
+  cmd,
   exit,
   runCommand,
   runPrompt,

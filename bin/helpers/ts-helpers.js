@@ -16,7 +16,7 @@ const createTSReactConfig = (common, includeJest = false) =>
       ...browser.compilerOptions,
       jsx: "react",
     },
-    exclude: [...(common.exclude || []), ...((includeJest && ["./src/**/*.tsx"]) || [])],
+    exclude: [...(common.exclude || []), ...((includeJest && ["./src/**/*test.tsx"]) || [])],
   }))(createTSBrowserConfig(common, includeJest));
 
 module.exports = {

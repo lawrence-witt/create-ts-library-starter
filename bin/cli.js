@@ -4,12 +4,27 @@
 
 const fs = require("fs");
 
-const { exit, runCommand, runPrompt, writeExportJSONFile } = require("./helpers/node-helpers.js");
-const { installCommand, installDevCommand, mergePackage } = require("./helpers/npm-helpers.js");
+const {
+  cmd,
+  exit,
+  runCommand,
+  runPrompt,
+  writeExportJSONFile,
+} = require("./helpers/node-helpers.js");
+
+const {
+  installCommand,
+  installDevCommand,
+  mergePackage,
+  mergePackageLock,
+} = require("./helpers/npm-helpers.js");
+
 const { createTSBrowserConfig, createTSReactConfig } = require("./helpers/ts-helpers");
+
 const { createEslintReactConfig } = require("./helpers/eslint-helpers");
 
 const package = require("../package.json");
+const packageLock = require("../package-lock.json");
 
 const tsCommonConfig = require("./config/typescript/tsconfig.common.json");
 const eslintCommonConfig = require("./config/eslint/eslintrc.common.js");
@@ -34,16 +49,20 @@ const {
 
   if (!repository) exit(new Error("No repository url found."));
 
+  console.log("Cloning into repo...");
   runCommand(`git clone --depth 1 ${repository} ${directory}`);
-  runCommand(`cd ${directory} && npm install`);
+
+  console.log("Installing base packages...");
+  runCommand(cmd.cd(directory, cmd.npm("install")));
 
   const envResult = await runPrompt("Select a target environment for this library:", ENVIRONMENTS);
   const includeDOM = DOM_ENVIRONMENTS.includes(envResult);
   const includeReact = envResult === "react";
 
   if (includeReact) {
-    runCommand(installCommand(REACT_DEPS));
-    runCommand(installDevCommand(REACT_DEV_DEPS));
+    console.log("Installing React dependencies...");
+    runCommand(cmd.cd(directory, installCommand(REACT_DEPS)));
+    runCommand(cmd.cd(directory, installCommand(REACT_DEV_DEPS)));
   }
 
   const jestResult = await runPrompt("Set up a Jest test runner for this library:", BINARY_OPTIONS);
@@ -58,21 +77,26 @@ const {
 
     const jestEnvPath = includeDOM ? "dom" : "common";
 
-    const jestConfigLocation = `./${directory}/bin/config/jest/jest.config.${jestEnvPath}.ts`;
-    const jestConfigDestination = `./${directory}/config/jest.config.ts`;
+    const jestConfigLocation = `./bin/config/jest/jest.config.${jestEnvPath}.ts`;
+    const jestConfigDestination = `./config/jest.config.ts`;
 
-    const jestSetupLocation = `./${directory}/bin/config/jest/setup-tests.ts`;
-    const jestSetupDestination = `./${directory}/config/setup-tests.ts`;
+    const jestSetupLocation = `./bin/config/jest/setup-tests.ts`;
+    const jestSetupDestination = `./config/setup-tests.ts`;
 
-    runCommand(installDevCommand(jestDevDeps));
-    runCommand(`mv ${jestConfigLocation} ${jestConfigDestination}`);
-    includeDOM && runCommand(`mv ${jestSetupLocation} ${jestSetupDestination}`);
+    console.log("Installing Jest dependencies...");
+    runCommand(cmd.cd(directory, installDevCommand(jestDevDeps)));
+
+    console.log("Adding Jest configuration...");
+    runCommand(cmd.cd(directory, cmd.mv(`${jestConfigLocation} ${jestConfigDestination}`)));
+    includeDOM &&
+      runCommand(cmd.cd(directory, cmd.mv(`${jestSetupLocation} ${jestSetupDestination}`)));
   }
 
-  const rollupConfigLocation = `./${directory}/bin/config/rollup/rollup.config.common.ts`;
-  const rollupConfigDestination = `./${directory}/config/rollup.config.ts`;
+  const rollupConfigLocation = `./bin/config/rollup/rollup.config.common.ts`;
+  const rollupConfigDestination = `./config/rollup.config.ts`;
 
-  runCommand(`mv ${rollupConfigLocation} ${rollupConfigDestination}`);
+  console.log("Adding rollup configuration...");
+  runCommand(cmd.cd(directory, cmd.mv(`${rollupConfigLocation} ${rollupConfigDestination}`)));
 
   const tsConfig = {
     node: () => tsCommonConfig,
@@ -80,6 +104,7 @@ const {
     react: () => createTSReactConfig(tsCommonConfig, includeJest),
   }[envResult]();
 
+  console.log("Adding TypeScript configuration...");
   fs.writeFileSync(`./${directory}/tsconfig.json`, JSON.stringify(tsConfig, null, 2));
 
   const eslintConfig = {
@@ -88,10 +113,12 @@ const {
     react: () => createEslintReactConfig(eslintCommonConfig),
   }[envResult]();
 
+  console.log("Adding ESLint configuration...");
   fs.writeFileSync(`./${directory}/.eslintrc.js`, writeExportJSONFile(eslintConfig));
 
-  runCommand(`rm ./${directory}/config/.gitkeep`);
-  runCommand(`cd ${directory} && npm run rimraf ./bin`);
+  console.log("Cleaning up...");
+  runCommand(cmd.cd(directory, "rm ./config/.gitkeep"));
+  runCommand(cmd.cd(directory, cmd.npmRun("rimraf ./bin")));
 
   const mergedPackage = mergePackage(package, {
     name: directory,
@@ -99,5 +126,9 @@ const {
     includeJest,
   });
 
+  const mergedPackageLock = mergePackageLock(packageLock, { name: directory });
+
+  console.log("Merging package details...");
   fs.writeFileSync(`./${directory}/package.json`, JSON.stringify(mergedPackage, null, 2));
+  fs.writeFileSync(`./${directory}/package-lock.json`, JSON.stringify(mergedPackageLock, null, 2));
 })();

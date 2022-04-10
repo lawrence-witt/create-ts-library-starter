@@ -41,4 +41,13 @@ const mergePackage = (package, options = {}) => {
   return package;
 };
 
-module.exports = { installCommand, installDevCommand, mergePackage };
+const mergePackageLock = (package, options = {}) => {
+  const { name } = options;
+
+  package.name = name;
+  package.version = "0.1.0";
+
+  return package;
+};
+
+module.exports = { installCommand, installDevCommand, mergePackage, mergePackageLock };
