@@ -65,7 +65,7 @@ const {
   if (includeReact) {
     console.log("Installing React dependencies...");
     runCommand(cmd.cd(directory, installCommand(REACT_DEPS)));
-    runCommand(cmd.cd(directory, installCommand(REACT_DEV_DEPS)));
+    runCommand(cmd.cd(directory, installDevCommand(REACT_DEV_DEPS)));
   }
 
   const jestResult = await runPrompt("Set up a Jest test runner for this library:", BINARY_OPTIONS);
