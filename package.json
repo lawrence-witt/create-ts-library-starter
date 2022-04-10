@@ -1,6 +1,6 @@
 {
   "name": "@itt.dev/create-ts-library-starter",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "description": "Starter template for bootstrapping TypeScript libraries",
   "main": "",
   "module": "",

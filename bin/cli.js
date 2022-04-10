@@ -24,7 +24,6 @@ const { createTSBrowserConfig, createTSReactConfig } = require("./helpers/ts-hel
 const { createEslintReactConfig } = require("./helpers/eslint-helpers");
 
 const package = require("../package.json");
-const packageLock = require("../package-lock.json");
 
 const tsCommonConfig = require("./config/typescript/tsconfig.common.json");
 const eslintCommonConfig = require("./config/eslint/eslintrc.common.js");
@@ -54,6 +53,8 @@ const {
 
   console.log("Installing base packages...");
   runCommand(cmd.cd(directory, cmd.npm("install")));
+
+  const packageLock = require("../package-lock.json");
 
   const envResult = await runPrompt("Select a target environment for this library:", ENVIRONMENTS);
   const includeDOM = DOM_ENVIRONMENTS.includes(envResult);
