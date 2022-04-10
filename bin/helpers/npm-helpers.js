@@ -28,12 +28,15 @@ const mergePackage = (package, options = {}) => {
   package.name = name;
   package.version = "0.1.0";
   package.description = "Created with create-ts-library-starter";
+  package.main = "./dist/index.js";
+  package.module = "./dist/index.esm.js";
+  package.types = "./dist/types/index.d.ts";
+  package.author = "";
 
   package.scripts = createScripts(includeReact, includeJest);
 
   delete package.bin;
   delete package.repository;
-  delete package.author;
 
   return package;
 };
