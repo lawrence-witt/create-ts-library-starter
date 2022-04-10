@@ -90,6 +90,9 @@ const {
 
   fs.writeFileSync(`./${directory}/.eslintrc.js`, writeExportJSONFile(eslintConfig));
 
+  runCommand(`rm ./${directory}/config/.gitkeep`);
+  runCommand(`cd ${directory} && npm run rimraf ./bin`);
+
   const mergedPackage = mergePackage(package, {
     name: directory,
     includeReact,
@@ -97,7 +100,4 @@ const {
   });
 
   fs.writeFileSync(`./${directory}/package.json`, JSON.stringify(mergedPackage, null, 2));
-
-  runCommand(`rm ./${directory}/config/.gitkeep`);
-  runCommand(`cd ${directory} && rimraf ./bin`);
 })();
