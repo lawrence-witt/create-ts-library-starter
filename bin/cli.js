@@ -99,5 +99,5 @@ const {
   fs.writeFileSync(`./${directory}/package.json`, JSON.stringify(mergedPackage, null, 2));
 
   runCommand(`rm ./${directory}/config/.gitkeep`);
-  runCommand(`rimraf ./${directory}/bin`);
+  runCommand(`cd ${directory} && rimraf ./bin`);
 })();
