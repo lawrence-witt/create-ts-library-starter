@@ -144,10 +144,13 @@ const {
   fs.writeFileSync(`./${directory}/package-lock.json`, JSON.stringify(mergedPackageLock, null, 2));
 
   console.log("Committing changes...");
-  runCommand(cmd.cd(directory, "git add ."));
+  runCommand(cmd.cd(directory, "git checkout --orphan installation"));
+  runCommand(cmd.cd(directory, "git add -A"));
   runCommand(
     cmd.cd(directory, `git commit -m "initialise new library with create-ts-library-starter"`),
   );
+  runCommand(cmd.cd(directory, "git branch -D main"));
+  runCommand(cmd.cd(directory, "git branch -m main"));
 
   console.log("Project initialised.");
 })();
