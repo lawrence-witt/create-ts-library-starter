@@ -123,11 +123,7 @@ const {
   console.log("Adding ESLint configuration...");
   fs.writeFileSync(`./.eslintrc.js`, writeExportJSONFile(eslintConfig));
 
-  /* Clean up the output repo */
-
-  console.log("Cleaning up...");
-  runCommand("rm ./config/.gitkeep");
-  runCommand(cmd.npmRun("rimraf ./bin"));
+  /* Merge package and package-lock */
 
   console.log("Merging package details...");
   const mergedPackage = mergePackage(JSON.parse(fs.readFileSync(`./package.json`, "utf-8")), {
@@ -144,8 +140,14 @@ const {
   fs.writeFileSync(`./package.json`, JSON.stringify(mergedPackage, null, 2));
   fs.writeFileSync(`./package-lock.json`, JSON.stringify(mergedPackageLock, null, 2));
 
-  console.log("Enforcing format...");
+  /* Clean up */
+
+  console.log("Cleaning up...");
+  runCommand("rm ./config/.gitkeep");
+  runCommand("npm exec rimraf ./bin");
   runCommand("npm run prettier");
+
+  /* Reset git repo */
 
   console.log("Committing changes...");
   runCommand("git checkout --orphan initialisation");
