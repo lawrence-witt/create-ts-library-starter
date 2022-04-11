@@ -1,14 +1,13 @@
 {
   "name": "@itt.dev/create-ts-library-starter",
-  "version": "0.1.10",
+  "version": "0.1.11",
   "description": "Starter template for bootstrapping TypeScript libraries",
   "main": "",
   "module": "",
   "types": "",
   "bin": "./bin/cli.js",
   "scripts": {
-    "rimraf": "rimraf",
-    "format": "prettier -w ./**/*.{js,ts,tsx,json}"
+    "rimraf": "rimraf"
   },
   "repository": {
     "type": "git",

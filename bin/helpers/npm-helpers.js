@@ -5,7 +5,7 @@ const installCommand = (deps) => `npm install ${deps.join(" ")}`;
 const installDevCommand = (deps) => `npm install -D ${deps.join(" ")}`;
 
 const createScripts = (includeReact, includeJest) => {
-  const exts = ["js", "ts", ...((includeReact && ["tsx"]) || [])];
+  const exts = ["js", "ts", ...((includeReact && ["tsx"]) || []), "json"];
 
   const test = { test: "jest -c ./config/jest.config.ts" };
 
@@ -17,8 +17,8 @@ const createScripts = (includeReact, includeJest) => {
     ...((includeJest && test) || {}),
     clean: "rimraf ./dist",
     lint: `eslint ./src --ext ${exts.map((e) => `.${e}`).join(",")}`,
-    prettier: `prettier -w ./src/**/*.{${exts.join(",")}}`,
-    "prettier:check": `prettier -c ./src/**/*.{${exts.join(",")}}`,
+    prettier: `prettier -w ./**/*.{${exts.join(",")}}`,
+    "prettier:check": `prettier -c ./**/*.{${exts.join(",")}}`,
   };
 };
 
