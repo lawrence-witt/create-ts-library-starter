@@ -54,7 +54,8 @@ const {
   runCommand(`git clone --depth 1 ${repository} ${directory}`);
 
   console.log("Installing base packages...");
-  runCommand(cmd.cd(directory, cmd.npm("install")));
+  process.chdir(`${directory}`);
+  runCommand(`npm install`);
 
   /* Configure user selections */
 
@@ -64,8 +65,8 @@ const {
 
   if (includeReact) {
     console.log("Installing React dependencies...");
-    runCommand(cmd.cd(directory, installCommand(REACT_DEPS)));
-    runCommand(cmd.cd(directory, installDevCommand(REACT_DEV_DEPS)));
+    runCommand(installCommand(REACT_DEPS));
+    runCommand(installDevCommand(REACT_DEV_DEPS));
   }
 
   const jestResult = await runPrompt("Set up a Jest test runner for this library:", BINARY_OPTIONS);
@@ -87,12 +88,11 @@ const {
     const jestSetupDestination = `./config/setup-tests.ts`;
 
     console.log("Installing Jest dependencies...");
-    runCommand(cmd.cd(directory, installDevCommand(jestDevDeps)));
+    runCommand(installDevCommand(jestDevDeps));
 
     console.log("Adding Jest configuration...");
-    runCommand(cmd.cd(directory, cmd.mv(`${jestConfigLocation} ${jestConfigDestination}`)));
-    includeDOM &&
-      runCommand(cmd.cd(directory, cmd.mv(`${jestSetupLocation} ${jestSetupDestination}`)));
+    runCommand(cmd.mv(`${jestConfigLocation} ${jestConfigDestination}`));
+    includeDOM && runCommand(cmd.mv(`${jestSetupLocation} ${jestSetupDestination}`));
   }
 
   /* Move other config files into the project */
@@ -101,7 +101,7 @@ const {
   const rollupConfigDestination = `./config/rollup.config.ts`;
 
   console.log("Adding rollup configuration...");
-  runCommand(cmd.cd(directory, cmd.mv(`${rollupConfigLocation} ${rollupConfigDestination}`)));
+  runCommand(cmd.mv(`${rollupConfigLocation} ${rollupConfigDestination}`));
 
   const tsConfig = {
     node: () => tsCommonConfig,
@@ -110,7 +110,7 @@ const {
   }[envResult]();
 
   console.log("Adding TypeScript configuration...");
-  fs.writeFileSync(`./${directory}/tsconfig.json`, JSON.stringify(tsConfig, null, 2));
+  fs.writeFileSync(`./tsconfig.json`, JSON.stringify(tsConfig, null, 2));
 
   const eslintConfig = {
     node: () => eslintCommonConfig,
@@ -119,15 +119,16 @@ const {
   }[envResult]();
 
   console.log("Adding ESLint configuration...");
-  fs.writeFileSync(`./${directory}/.eslintrc.js`, writeExportJSONFile(eslintConfig));
+  fs.writeFileSync(`./.eslintrc.js`, writeExportJSONFile(eslintConfig));
+
+  /* Clean up the output repo */
 
   console.log("Cleaning up...");
-  runCommand(cmd.cd(directory, "rm ./config/.gitkeep"));
-  runCommand(cmd.cd(directory, cmd.npmRun("rimraf ./bin")));
+  runCommand("rm ./config/.gitkeep");
+  runCommand(cmd.npmRun("rimraf ./bin"));
+  runCommand(cmd.npmRun("format"));
 
-  /* Update the package and package-lock */
-
-  const updatedPackage = JSON.parse(fs.readFileSync(`./${directory}/package.json`, "utf-8"));
+  const updatedPackage = JSON.parse(fs.readFileSync(`./package.json`, "utf-8"));
 
   const mergedPackage = mergePackage(updatedPackage, {
     name: directory,
@@ -135,22 +136,20 @@ const {
     includeJest,
   });
 
-  const packageLock = JSON.parse(fs.readFileSync(`./${directory}/package-lock.json`, "utf-8"));
+  const packageLock = JSON.parse(fs.readFileSync(`./package-lock.json`, "utf-8"));
 
   const mergedPackageLock = mergePackageLock(packageLock, directory);
 
   console.log("Merging package details...");
-  fs.writeFileSync(`./${directory}/package.json`, JSON.stringify(mergedPackage, null, 2));
-  fs.writeFileSync(`./${directory}/package-lock.json`, JSON.stringify(mergedPackageLock, null, 2));
+  fs.writeFileSync(`./package.json`, JSON.stringify(mergedPackage, null, 2));
+  fs.writeFileSync(`./package-lock.json`, JSON.stringify(mergedPackageLock, null, 2));
 
   console.log("Committing changes...");
-  runCommand(cmd.cd(directory, "git checkout --orphan installation"));
-  runCommand(cmd.cd(directory, "git add -A"));
-  runCommand(
-    cmd.cd(directory, `git commit -m "initialise new library with create-ts-library-starter"`),
-  );
-  runCommand(cmd.cd(directory, "git branch -D main"));
-  runCommand(cmd.cd(directory, "git branch -m main"));
+  runCommand("git checkout --orphan installation");
+  runCommand("git add -A");
+  runCommand(`git commit -m "initialise new library with create-ts-library-starter"`);
+  runCommand("git branch -D main");
+  runCommand("git branch -m main");
 
   console.log("Project initialised.");
 })();
