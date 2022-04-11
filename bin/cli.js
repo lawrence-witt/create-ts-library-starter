@@ -144,6 +144,7 @@ const {
 
   console.log("Committing changes...");
   runCommand("git checkout --orphan initialisation");
+  runCommand("git config --local core.autocrlf false");
   runCommand("git add -A");
   runCommand(`git commit -m "initialise new library with create-ts-library-starter"`);
   runCommand("git branch -D main");
