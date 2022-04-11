@@ -144,6 +144,9 @@ const {
   fs.writeFileSync(`./package.json`, JSON.stringify(mergedPackage, null, 2));
   fs.writeFileSync(`./package-lock.json`, JSON.stringify(mergedPackageLock, null, 2));
 
+  console.log("Enforcing format...");
+  runCommand("npm run prettier");
+
   console.log("Committing changes...");
   runCommand("git checkout --orphan initialisation");
   runCommand("git config --local core.autocrlf false");
