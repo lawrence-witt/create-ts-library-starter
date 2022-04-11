@@ -126,26 +126,26 @@ const {
   console.log("Cleaning up...");
   runCommand("rm ./config/.gitkeep");
   runCommand(cmd.npmRun("rimraf ./bin"));
-  runCommand(cmd.npmRun("format"));
 
-  const updatedPackage = JSON.parse(fs.readFileSync(`./package.json`, "utf-8"));
-
-  const mergedPackage = mergePackage(updatedPackage, {
+  console.log("Merging package details...");
+  const mergedPackage = mergePackage(JSON.parse(fs.readFileSync(`./package.json`, "utf-8")), {
     name: directory,
     includeReact,
     includeJest,
   });
 
-  const packageLock = JSON.parse(fs.readFileSync(`./package-lock.json`, "utf-8"));
+  const mergedPackageLock = mergePackageLock(
+    JSON.parse(fs.readFileSync(`./package-lock.json`, "utf-8")),
+    directory,
+  );
 
-  const mergedPackageLock = mergePackageLock(packageLock, directory);
-
-  console.log("Merging package details...");
   fs.writeFileSync(`./package.json`, JSON.stringify(mergedPackage, null, 2));
   fs.writeFileSync(`./package-lock.json`, JSON.stringify(mergedPackageLock, null, 2));
 
+  runCommand(cmd.npmRun("format"));
+
   console.log("Committing changes...");
-  runCommand("git checkout --orphan installation");
+  runCommand("git checkout --orphan initialisation");
   runCommand("git add -A");
   runCommand(`git commit -m "initialise new library with create-ts-library-starter"`);
   runCommand("git branch -D main");
