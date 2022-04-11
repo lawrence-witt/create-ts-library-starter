@@ -40,6 +40,8 @@ const {
 } = require("./constants.js");
 
 (async () => {
+  console.log("Starting the build...");
+
   const directory = process.argv[2];
 
   if (!directory) exit(new Error("No directory specified."));
